@@ -1,0 +1,15 @@
+﻿/*
+    Stylesheet for custom styling
+*/
+
+/* Create Button */
+.create_btn a {
+    color: greenyellow;
+    font-weight: bold;
+}
+
+/* Create Button hover effects */
+.create_btn:hover .create_new_btnlink, .create_new_btnlink:hover {
+    text-decoration: none;
+    color: aliceblue;
+}

@@ -1,0 +1,160 @@
+﻿@model EmployeesApplication.Models.EmployeesVM
+
+@{
+    ViewBag.Title = "Employees Table";
+}
+
+<h2>
+    Employees Table
+    <button class="btn btn-default" style="float: right; border: 3px solid #35363A;" type="button" data-toggle="modal" data-target="#importfile"> Import CSV file </button>
+</h2>
+
+
+@*    Modal Window for form input tegs    *@
+<div class="modal" id="importfile">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"> Upload the CSV file <button type="button" style="text-align: left;" class="close" data-dismiss="modal">&times;</button> </h4>
+
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                @*  html form rendering for Importing csv file *@
+                @using (Html.BeginForm("ImportCsv", "Employee", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-group form-inline", style = "margin-top: 15px;" }))
+                {
+                    <input type="file" name="upload" class="form-control" />
+                    <input type="submit" value="Upload" class="btn btn-warning" />
+                }
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<table id="employeeTable" class="display">
+    <thead>
+        <tr>
+            <th>Surname</th>
+            <th>Forenames</th>
+            <th>Payroll Number</th>
+            <th>Date of Birth</th>
+            <th>Telephone</th>
+            <th>Mobile</th>
+            <th>Address</th>
+            <th>Address 2</th>
+            <th>Postcode</th>
+            <th>Email</th>
+            <th>Start Date</th>
+            <th colspan='3'>
+                @* 'Create New Record' <= BUTTON *@
+                <div class='btn btn-info create_btn'>
+                    <a href='/Employee/Create' class='create_new_btnlink'>Create New Record</a>
+                </div>
+            </th>
+            <th style="display: none;"></th>
+            <th style="display: none;"></th>
+        </tr>
+    </thead>
+
+</table>
+
+
+@section scripts {
+
+    <script src="~/Scripts/datatables.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+
+    @*   Toastr Notification   *@
+    @if (Model.Succeeded)
+    {
+        if (Model.Added > 0)
+        {
+            <script>toastr.success(@Model.Added.ToString() + ' employee records have been added successfully!');</script>
+        }
+        if (Model.Created)
+        {
+            <script>toastr.success('New record has been created successfully!');</script>
+
+        }
+        if (Model.Edited)
+        {
+            <script>toastr.info('The record has been edited successfully!');</script>
+        }
+        if (Model.Deleted)
+        {
+            <script>toastr.error('The record has been deleted successfully!');</script>
+        }
+    }
+
+
+    <script>
+        $(document).ready(function () {
+
+            // jQuery plugin 'DataTable' for rendering and styling Table elements according to data taken from the source
+            var table = $("#employeeTable").DataTable({
+                "ajax": {
+                    "url": "/Employee/GetList",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Surname", "name": "Surname" },
+                    { "data": "Forenames", "name": "Forenames" },
+                    { "data": "Payroll_Number", "name": "Payroll_Number" },
+                    { "data": "Date_of_Birth", "name": "Date_of_Birth" },
+                    { "data": "Telephone", "name": "Telephone" },
+                    { "data": "Mobile", "name": "Mobile" },
+                    { "data": "Address", "name": "Address" },
+                    { "data": "Address_2", "name": "Address_2" },
+                    { "data": "Postcode", "name": "Postcode" },
+                    { "data": "EMail_Home", "name": "EMail_Home" },
+                    { "data": "Start_Date", "name": "Start_Date" },
+                    {
+                        "data": "Id",
+                        "name": "",
+                        "render": function (data, type) {
+                            // Render edit button table cell
+                            return "<a href='/Employee/Edit/" + data + "' class='btn btn-default' title='Edit'> <i class='far fa-edit'></i> </a>";
+                        }
+                    },
+                    {
+                        "data": "Id",
+                        "name": "",
+                        "render": function (data, type) {
+                            // Render details button table cell
+                            return "<a href='/Employee/Details/" + data + "' class='btn btn-info' title='Details'> <i class='fa fa-info-circle'></i> </a>";
+                        }
+                    },
+                    {
+                        "data": "Id",
+                        "name": "",
+                        "render": function (data, type) {
+                            // Render delete button table cell
+                            return "<a href='/Employee/Delete/" + data + "' class='btn btn-danger' title='Delete'> <i class='fa fa-trash-alt'></i> </a>";
+                        }
+                    }
+
+                ],
+                // Show notification while processing with table or waiting for data
+                "processing": "true",
+                "language": {
+                    // Notification Message
+                    "processing": "Processing... please wait"
+                }
+            });
+        });
+
+
+    </script>
+}

@@ -1,0 +1,128 @@
+﻿@model EmployeesApplication.Models.Employees
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Employees</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Payroll_Number)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Payroll_Number)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Forenames)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Forenames)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Surname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Surname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Date_of_Birth)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Date_of_Birth)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Telephone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Telephone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Mobile)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Mobile)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Address_2)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Address_2)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Postcode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Postcode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EMail_Home)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EMail_Home)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Start_Date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Start_Date)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            @* 'Back to List' <= BUTTON *@
+            <a href="/Employee/Index" class="btn btn-success" title="Back To List">
+                <i class="fa fa-arrow-circle-left"></i>
+            </a> |
+            @* Button for confirming Delete Operation *@
+            <input type="submit" value="Delete" class="btn btn-default" />
+        </div>
+    }
+</div>
+
+
+@section scripts {
+    @* Toastr Notifications *@
+    <script src="~/Scripts/toastr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            toastr.warning('Are you sure want to delete this record');
+        });
+    </script>
+}
