@@ -11,52 +11,20 @@ namespace EmployeesApplication.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class Employees
     {
-        [Key]
         public int Id { get; set; }
-
-        /* Custom settings for client-side validation and customization */
-
-        [DisplayName("Payroll Number"), Required,
-            StringLength(maximumLength: 25, MinimumLength = 6, ErrorMessage = "Length of the property shoudl be between 6 and 25")]
         public string Payroll_Number { get; set; }
-
-        [DisplayName("Forenames"), Required,
-            StringLength(maximumLength: 25, MinimumLength = 2, ErrorMessage = "Length of the property shoudl be between 2 and 25")]
         public string Forenames { get; set; }
-
-        [DisplayName("Surname"), Required,
-    StringLength(maximumLength: 25, MinimumLength = 2, ErrorMessage = "Length of the property shoudl be between 2 and 25")]
         public string Surname { get; set; }
-
-        [DisplayName("Date of birth"), Required]
         public Nullable<System.DateTime> Date_of_Birth { get; set; }
-
-        [DisplayName("Telephone")]
         public string Telephone { get; set; }
-
-        [DisplayName("Mobile"), Required]
         public string Mobile { get; set; }
-
-        [DisplayName("Address"), Required,
-    StringLength(maximumLength: 50, MinimumLength = 6, ErrorMessage = "Length of the property shoudl be between 6 and 50")]
         public string Address { get; set; }
-
-        [DisplayName("Address 2")]
         public string Address_2 { get; set; }
-
-        [DisplayName("Postcode"), Required,
-    StringLength(maximumLength: 20, MinimumLength = 6, ErrorMessage = "Length of the property shoudl be between 6 and 20")]
         public string Postcode { get; set; }
-
-        [DisplayName("Email")]
         public string EMail_Home { get; set; }
-
-        [DisplayName("Start Date"), Required]
         public System.DateTime Start_Date { get; set; }
     }
 }

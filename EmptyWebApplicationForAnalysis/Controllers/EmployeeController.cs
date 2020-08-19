@@ -8,12 +8,19 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using EmployeesApplication.Models;
+using EmployeesApplication.Repositories;
+using EmptyWebApplicationForAnalysis;
 
 namespace EmployeesApplication.Controllers
 {
     public class EmployeeController : Controller
     {
-        private EmployeesEntities db = new EmployeesEntities();
+        private readonly IRepository _repository;
+
+        public EmployeeController(IRepository repository)
+        {
+            _repository = repository;
+        }
 
         // GET: Employee
         public ActionResult Index()
@@ -68,7 +75,7 @@ namespace EmployeesApplication.Controllers
         [HttpPost]
         public ActionResult GetList()
         {
-            var EmpList = db.Employees.ToList();
+            var EmpList = _repository.GetEmployeeList();
 
             // New object List to send to AJAX DataTable
             var employees = new List<object>();
@@ -140,9 +147,9 @@ namespace EmployeesApplication.Controllers
                     AddedItemsCount = EmListFromFile.Count;
                     // Add to Database
                     foreach (var employee in EmListFromFile)
-                        db.Employees.Add(employee);
+                        _repository.AddEmployee(employee);
 
-                    db.SaveChanges();
+                    _repository.SaveChanges();
                 }
                 catch (Exception ex)
                 {
@@ -166,7 +173,7 @@ namespace EmployeesApplication.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employees employees = db.Employees.Find(id);
+            Employees employees = _repository.FindById(id);
             if (employees == null)
             {
                 return HttpNotFound();
@@ -181,16 +188,14 @@ namespace EmployeesApplication.Controllers
         }
 
         // POST: Employee/Create
-        // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
-        // сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Payroll_Number,Forenames,Surname,Date_of_Birth,Telephone,Mobile,Address,Address_2,Postcode,EMail_Home,Start_Date")] Employees employees)
         {
             if (ModelState.IsValid)
             {
-                db.Employees.Add(employees);
-                db.SaveChanges();
+                _repository.AddEmployee(employees);
+                _repository.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -204,7 +209,7 @@ namespace EmployeesApplication.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employees employees = db.Employees.Find(id);
+            Employees employees = _repository.FindById(id);
             if (employees == null)
             {
                 return HttpNotFound();
@@ -219,8 +224,8 @@ namespace EmployeesApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(employees).State = EntityState.Modified;
-                db.SaveChanges();
+                _repository.Update(employees);
+                _repository.SaveChanges();
 
                 // Temporarly persists the data that needs for notifying
                 TempData["EditedSuccessfully"] = true;
@@ -236,7 +241,7 @@ namespace EmployeesApplication.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employees employees = db.Employees.Find(id);
+            Employees employees = _repository.FindById(id);
             if (employees == null)
             {
                 return HttpNotFound();
@@ -249,9 +254,8 @@ namespace EmployeesApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Employees employees = db.Employees.Find(id);
-            db.Employees.Remove(employees);
-            db.SaveChanges();
+            _repository.Delete(id);
+            _repository.SaveChanges();
 
             // Temporarly persists the data that needs for notifying
             TempData["DeletedSuccessfully"] = true;
@@ -278,7 +282,7 @@ namespace EmployeesApplication.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _repository.Dispose();
             }
             base.Dispose(disposing);
         }
