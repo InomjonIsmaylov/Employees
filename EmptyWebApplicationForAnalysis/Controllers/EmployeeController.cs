@@ -80,26 +80,25 @@ namespace EmployeesApplication.Controllers
             // New object List to send to AJAX DataTable
             var employees = new List<object>();
 
-            foreach (var emp in EmpList)
-            {
-                employees.Add(new
-                {
-                    Address = emp.Address,
-                    Address_2 = emp.Address_2,
-                    // To display in a correct Format
-                    Date_of_Birth = emp.Date_of_Birth.Value.Date.ToShortDateString(),
-                    EMail_Home = emp.EMail_Home,
-                    Forenames = emp.Forenames,
-                    Id = emp.Id,
-                    Mobile = emp.Mobile,
-                    Payroll_Number = emp.Payroll_Number,
-                    Postcode = emp.Postcode,
-                    // To display in a correct Format
-                    Start_Date = emp.Start_Date.Date.ToShortDateString(),
-                    Surname = emp.Surname,
-                    Telephone = emp.Telephone
-                });
-            }
+            if (employees.Any())
+                foreach (var emp in EmpList)
+                    employees.Add(new
+                    {
+                        Address = emp.Address,
+                        Address_2 = emp.Address_2,
+                        // To display in a correct Format
+                        Date_of_Birth = emp.Date_of_Birth.Value.Date.ToShortDateString(),
+                        EMail_Home = emp.EMail_Home,
+                        Forenames = emp.Forenames,
+                        Id = emp.Id,
+                        Mobile = emp.Mobile,
+                        Payroll_Number = emp.Payroll_Number,
+                        Postcode = emp.Postcode,
+                        // To display in a correct Format
+                        Start_Date = emp.Start_Date.Date.ToShortDateString(),
+                        Surname = emp.Surname,
+                        Telephone = emp.Telephone
+                    });
 
             return Json(new { data = employees }, JsonRequestBehavior.AllowGet);
         }
@@ -162,9 +161,6 @@ namespace EmployeesApplication.Controllers
             TempData["AddedItemsCount"] = AddedItemsCount;
             return RedirectToAction("Index");
         }
-
-
-
 
         // GET: Employee/Details/5
         public ActionResult Details(int? id)
@@ -276,7 +272,6 @@ namespace EmployeesApplication.Controllers
             ViewBag.Message = "Contact page.";
             return View();
         }
-
 
         protected override void Dispose(bool disposing)
         {
