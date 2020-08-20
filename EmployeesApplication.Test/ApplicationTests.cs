@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Collections.Generic;
 using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
 using EmployeesApplication.Controllers;
 using EmployeesApplication.Models;
 using EmployeesApplication.Repositories;
-using EmptyWebApplicationForAnalysis;
-using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 

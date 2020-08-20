@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace EmployeesApplication.Models
+﻿namespace EmployeesApplication.Models
 {
     /// <summary>
     /// View Model Class, for interactions between Controller and View
