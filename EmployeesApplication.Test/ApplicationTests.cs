@@ -58,28 +58,6 @@ namespace EmployeesApplication.Test
         }
 
         [TestMethod]
-        public void GetList_ResultNotNULL()
-        {
-            var mock = new Mock<IRepository>();
-            EmployeeController controller = new EmployeeController(mock.Object);
-            var result = controller.GetList();
-
-            Assert.IsNotNull(result);
-        }
-
-        [TestMethod]
-        public void GetList_Return_Json()
-        {
-            var mock = new Mock<IRepository>();
-            mock.Object.AddEmployee(new Employees());
-            EmployeeController controller = new EmployeeController(mock.Object);
-
-            var result = controller.GetList();
-
-            Assert.AreEqual(typeof(JsonResult), result.GetType());
-        }
-
-        [TestMethod]
         public void ImportCsv_RedirectsTo_IndexMethod()
         {
             var mock = new Mock<HttpPostedFileBase>();

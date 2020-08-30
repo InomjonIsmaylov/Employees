@@ -77,7 +77,7 @@ namespace EmployeesApplication.Controllers
             // New object List to send to AJAX DataTable
             var employees = new List<object>();
 
-            if (employees.Any())
+            if (EmpList.Any())
                 foreach (var emp in EmpList)
                     employees.Add(new
                     {
