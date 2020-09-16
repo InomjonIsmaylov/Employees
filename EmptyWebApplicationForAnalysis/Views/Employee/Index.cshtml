@@ -6,6 +6,7 @@
 
 <h2>
     Employees Table
+    @* Import BUTTON *@
     <button class="btn btn-default" style="float: right; border: 3px solid #35363A;" type="button" data-toggle="modal" data-target="#importfile"> Import CSV file </button>
 </h2>
 
@@ -17,17 +18,16 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title"> Upload the CSV file <button type="button" style="text-align: left;" class="close" data-dismiss="modal">&times;</button> </h4>
-
+                <h4 class="modal-title"> <i class="fas fa-file-csv fa-2x"></i> Upload the CSV file <button type="button" style="text-align: left;" class="close" data-dismiss="modal">&times;</button> </h4>
             </div>
 
             <!-- Modal body -->
             <div class="modal-body">
                 @*  html form rendering for Importing csv file *@
-                @using (Html.BeginForm("ImportCsv", "Employee", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-group form-inline", style = "margin-top: 15px;" }))
+                @using (Html.BeginForm("ImportCsv", "Employee", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-group form-inline", name = "csv", id = "ImportCsvForm", style = "margin-top: 15px;" }))
                 {
-                    <input type="file" name="upload" class="form-control" />
-                    <input type="submit" value="Upload" class="btn btn-warning" />
+                    <input type="file" id="file" name="upload" class="form-control" accept=".csv"/>
+                    <button class="btn btn-warning" type="button" onclick="return ImportCsvSubmit()"> <i class="fas fa-file-upload"></i> Upload </button>
                 }
             </div>
 
@@ -42,10 +42,13 @@
 </div>
 
 
+@*   Modal Window for main Interactions   *@
+<div class="modal" id="mainModal"></div>
+
 <table id="employeeTable" class="display">
-    <thead>
+    <thead style="white-space: nowrap;">
         <tr>
-            <th>Surname</th>
+            <th class="permanent">Surname</th>
             <th>Forenames</th>
             <th>Payroll Number</th>
             <th>Date of Birth</th>
@@ -56,14 +59,9 @@
             <th>Postcode</th>
             <th>Email</th>
             <th>Start Date</th>
-            <th colspan='3'>
-                @* 'Create New Record' <= BUTTON *@
-                <div class='btn btn-info create_btn'>
-                    <a href='/Employee/Create' class='create_new_btnlink'>Create New Record</a>
-                </div>
-            </th>
-            <th style="display: none;"></th>
-            <th style="display: none;"></th>
+            <th></th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
 
@@ -73,41 +71,28 @@
 @section scripts {
 
     <script src="~/Scripts/datatables.js"></script>
+    <script src="~/Scripts/dataTables.material.min.js"></script>
+    <script src="~/Scripts/dataTables.buttons.min.js"></script>
+    <script src="~/Scripts/buttons.colVis.min.js"></script>
+    <script src="~/Scripts/dataTables.fixedColumns.min.js"></script>
     <script src="~/Scripts/toastr.min.js"></script>
-
-    @*   Toastr Notification   *@
-    @if (Model.Succeeded)
-    {
-        if (Model.Added > 0)
-        {
-            <script>toastr.success(@Model.Added.ToString() + ' employee records have been added successfully!');</script>
-        }
-        if (Model.Created)
-        {
-            <script>toastr.success('New record has been created successfully!');</script>
-
-        }
-        if (Model.Edited)
-        {
-            <script>toastr.info('The record has been updated successfully!');</script>
-        }
-        if (Model.Deleted)
-        {
-            <script>toastr.error('The record has been removed successfully!');</script>
-        }
-    }
 
 
     <script>
-        $(document).ready(function () {
+        var DataTable;
 
+        $(document).ready(function () {
             // jQuery plugin 'DataTable' for rendering and styling Table elements according to data taken from the source
-            var table = $("#employeeTable").DataTable({
+            DataTable = $("#employeeTable").DataTable({
                 "ajax": {
                     "url": "/Employee/GetList",
                     "type": "POST",
-                    "datatype": "json"
+                    "datatype": "json",
+                    "data": function ( d ) {
+                        d.fromDataTablePage = true
+                    }
                 },
+                autoWidth: false,
                 "columns": [
                     { "data": "Surname", "name": "Surname" },
                     { "data": "Forenames", "name": "Forenames" },
@@ -122,39 +107,288 @@
                     { "data": "Start_Date", "name": "Start_Date" },
                     {
                         "data": "Id",
-                        "name": "",
                         "render": function (data, type) {
                             // Render edit button table cell
-                            return "<a href='/Employee/Edit/" + data + "' class='btn btn-default' title='Edit'> <i class='far fa-edit'></i> </a>";
-                        }
+                            return "<button type='button' onclick='OpenEditModal(" + data + ");' class='btn btn-default' title='Edit'> <i class='far fa-edit'></i> </button>";
+                        },
+                        className: 'permanent',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         "data": "Id",
-                        "name": "",
                         "render": function (data, type) {
                             // Render details button table cell
-                            return "<a href='/Employee/Details/" + data + "' class='btn btn-info' title='Details'> <i class='fa fa-info-circle'></i> </a>";
-                        }
+                            return "<button type='button' onclick='OpenDetailsModal(" + data + ");' class='btn btn-info' title='Details'> <i class='fa fa-info-circle'></i> </button>";
+                        },
+                        className: 'permanent',
+                        searchable: false,
+                        orderable: false
                     },
                     {
                         "data": "Id",
-                        "name": "",
                         "render": function (data, type) {
                             // Render delete button table cell
-                            return "<a href='/Employee/Delete/" + data + "' class='btn btn-danger' title='Delete'> <i class='fa fa-trash-alt'></i> </a>";
+                            return "<button class='btn btn-danger' type='button' onclick='OpenDeleteModal(" + data + ");' title='Delete'> <i class='fa fa-trash-alt'></i> </button>";
+                        },
+                        className: 'permanent',
+                        searchable: false,
+                        orderable: false
+                    },
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        columns: [':not(.permanent)'],
+                        collectionLayout: 'two-column',
+                        //columnText: function (dt, idx, title) {
+                        //    return (idx) + '. ' + title;
+                        //}
+                    },
+                    {
+                        text: '<i class="fas fa-plus"></i> Create new Record',
+                        attr: {
+                            type: 'submit',
+                            id: 'createButton'
+                        },
+                        action: function (e, dt, node, config) {
+                            OpenCreateModal();
+                            //location.href = '/Employee/Create';
                         }
                     }
-
+                ],
+                columnDefs: [
+                    {
+                        targets: ['_all'],
+                        className: 'mdc-data-table__cell'
+                    },
                 ],
                 // Show notification while processing with table or waiting for data
                 "processing": "true",
-                "language": {
+                language: {
                     // Notification Message
-                    "processing": "Processing... please wait"
-                }
+                    "processing": "Processing... please wait",
+                    buttons: {
+                        colvis: '<i class="fas fa-th-list"></i> Change columns'
+                    }
+                },
+                scrollX: true,
+                fixedColumns: {
+                    leftColumns: 1,
+                    rightColumns: 3
+                },
             });
+
+            $.modal.defaults.fadeDuration = 750;
+
+            $('body').on('modal:before-close', function (event, modal) {
+                modal.$elm.remove();
+            });
+
         });
 
 
+        var CreateFormData;
+
+        function OpenCreateModal(openedWithError = false, errorHtml = '') {
+            if (openedWithError) {
+
+                this.blur(); // Manually remove focus from clicked link.
+
+                var res = $('<div class="wrap"></div>');
+                res.append(errorHtml);
+                $(res).appendTo('#mainModal').modal();
+
+            }
+            else {
+                this.blur(); // Manually remove focus from clicked link.
+
+                var url = '@Url.Action("Create", "Employee")';
+
+                $.get(url, function (html) {
+                    var res = $('<div class="wrap"></div>');
+                    res.append(html);
+                    $(res).appendTo('#mainModal').modal();
+                });
+            }
+
+        }
+
+
+        function OpenEditModal(id) {
+            var url = '@Url.Action("Edit", "Employee")/' + id;
+            this.blur(); // Manually remove focus from clicked link.
+
+            $.get(url, function (html) {
+                var res = $('<div class="wrap"></div>');
+                res.append(html);
+                $(res).appendTo('#mainModal').modal();
+            });
+        }
+
+        function OpenDetailsModal(id) {
+            var url = '@Url.Action("Details", "Employee")/' + id;
+            this.blur(); // Manually remove focus from clicked link.
+
+            $.get(url, function (html) {
+                var res = $('<div class="wrap"></div>');
+                res.append(html);
+                $(res).appendTo('#mainModal').modal();
+            });
+        }
+
+        function OpenDeleteModal(id) {
+            var url = '@Url.Action("Delete", "Employee")/' + id;
+            this.blur(); // Manually remove focus from clicked link.
+            toastr.warning('Are you sure want to delete this record ?');
+
+            $.get(url, function (html) {
+                var res = $('<div class="wrap"></div>');
+                res.append(html);
+                $(res).appendTo('#mainModal').modal();
+            });
+        }
+
+        function EditFormSubmit() {
+            var token = $('#EditForm input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '@Url.Action("Edit", "Employee")',
+                type: 'POST',
+                headers: { __RequestVerificationToken: token },
+                data: $('#EditForm').serialize(),
+                cache: false,
+                success: function (data) {
+                    if (data.success) {
+                        ReloadTable();
+                        toastr.info(data.message, 'Edit Record');
+                        $.modal.close();
+                    }
+                    else {
+                        toastr.warning(data.message);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+
+                    alert(xhr.status + ', ' + textStatus);
+                }
+            });
+
+            return false;
+        }
+
+        function DeleteFormSubmit() {
+            var token = $('#DeleteForm input[name="__RequestVerificationToken"]').val();
+
+            var obj = { __RequestVerificationToken: token, id : $('#DeleteForm input[name=Id]').val() }
+
+            $.ajax({
+                url: '@Url.Action("Delete", "Employee")',
+                type: 'POST',
+                headers: { __RequestVerificationToken: token },
+                data: obj,
+                cache: false,
+                success: function (data) {
+                    ReloadTable();
+                    toastr.error(data.message, 'Delete Record');
+                    $.modal.close();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    toastr.error(xhr.responseJSON.message, 'Delete Record');
+                }
+            });
+
+            return false;
+        }
+
+        function CreateFormSubmit() {
+            UpdateInputValues();
+            var token = $('#CreateForm input[name="__RequestVerificationToken"]').val();
+            var CreateFormData;
+
+            var headers = {};
+            headers["__RequestVerificationToken"] = token;
+            var arr = $("#CreateForm").serializeArray();
+
+            var obj = {};
+
+            arr.forEach(function (pair, index) {
+                obj[pair.name] = pair.value;
+            });
+
+            $.ajax({
+                url: '@Url.Action("Create", "Employee")',
+                type: 'POST',
+                headers: headers,
+                dataType: 'json',
+                data: obj,
+                cache: false,
+                success: function (data) {
+                    toastr.success(data.message, 'Creating new Record!');
+                    ReloadTable();
+                    $.modal.close();
+                },
+                error: function (xhr, textStatus) {
+                    toastr.warning('Could not insert the Record', 'Validation Error');
+                    $.modal.close();
+                    OpenCreateModal(true, xhr.responseText);
+                }
+            });
+
+            return false;
+        }
+
+        function ImportCsvSubmit() {
+
+            var data = new FormData();
+
+            data.append('file', document.getElementById('file').files[0]);
+
+            $.ajax({
+                url: '@Url.Action("ImportCsv", "Employee")',
+                type: 'POST',
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                dataType: 'json',
+                success: function (data) {
+                    ReloadTable();
+                    toastr.success(data.message, 'Import records from file');
+                    //$('#importfile').modal('hide');
+                    $.modal.close();
+                    $('button.close').click();
+                    $('.modal-backdrop.in').css('display', 'none');
+
+                    var f = document.getElementById('file');
+                    f.value = null;
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    toastr.warning(xhr.responseJSON.message);
+                }
+            });
+
+            return false;
+        }
+
+
+
+
+        function UpdateInputValues() {
+            var inputs = document.getElementById('CreateForm').getElementsByTagName('input');
+            for (var i = 1; i < inputs.length; i++) {
+                var input = inputs[i];
+                input.setAttribute('value', input.value);
+            }
+        }
+
+
+
+        function ReloadTable() {
+            DataTable.ajax.reload();
+        }
+
     </script>
+
 }

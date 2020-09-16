@@ -24,7 +24,7 @@ namespace EmployeesApplication.Repositories
 
         public void Delete(int? id) => Delete(FindById(id));
 
-        public void SaveChanges() => _db.SaveChanges();
+        public int SaveChanges() => _db.SaveChanges();
 
         public void Dispose() => Dispose(true);
 

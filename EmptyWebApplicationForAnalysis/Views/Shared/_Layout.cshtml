@@ -1,16 +1,22 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-<link href="~/Content/Custom.css" rel="stylesheet" />
-<link href="~/fonts/css/all.min.css" rel="stylesheet" />
-<link href="~/Content/datatables.css" rel="stylesheet" />
-<link href="~/Content/toastr.css" rel="stylesheet" />
+    <link href="~/Content/Custom.css" rel="stylesheet" />
+    <link href="~/fonts/css/all.min.css" rel="stylesheet" />
+    <link href="~/Content/datatables.css" rel="stylesheet" />
+    <link href="~/Content/material-components-web.min.css" rel="stylesheet" />
+    <link href="~/Content/dataTables.material.min.css" rel="stylesheet" />
+    <link href="~/Content/buttons.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/fixedColumns.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    <link href="~/Content/jquery.modal.min.css" rel="stylesheet" />
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -32,7 +38,7 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid body-content">
+    <div class="container body-content">
         @RenderBody()
         <hr />
         <footer>
@@ -41,8 +47,10 @@
     </div>
 
     @Scripts.Render("~/bundles/jquery")
+
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
-<script src="~/fonts/js/all.min.js"></script>
+    <script src="~/fonts/js/all.min.js"></script>
+    <script src="~/Scripts/jquery.modal.min.js"></script>
 </body>
 </html>

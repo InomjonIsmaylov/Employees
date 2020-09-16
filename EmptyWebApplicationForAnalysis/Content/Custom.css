@@ -8,8 +8,77 @@
     font-weight: bold;
 }
 
+body {
+    max-width: initial;
+}
+
 /* Create Button hover effects */
 .create_btn:hover .create_new_btnlink, .create_new_btnlink:hover {
     text-decoration: none;
     color: aliceblue;
+}
+
+.mdc-data-table__cell {
+    font-size: 1.3rem!important;
+}
+
+.mdc-data-table {
+    display: flex!important;
+}
+
+.mdc-data-table__content  {
+    background-color: white;
+}
+
+.mdc-data-table__header-row th {
+    border: none!important;
+    background-color: transparent;
+}
+
+.DTFC_LeftBodyLiner, .DTFC_RightBodyLiner {
+    overflow: hidden;
+}
+
+#employeeTable_wrapper {
+    padding: 25px;
+}
+
+.blocker {
+    z-index: 1031!important;
+}
+
+.modal {
+    z-index: 1032!important;
+    max-width: 650px;
+}
+
+.close-modal {
+    top: 10px!important;
+    right: 10px!important;
+    z-index: 1100!important;
+}
+
+.DTFC_ScrollWrapper .DTFC_RightWrapper, .DTFC_ScrollWrapper .DTFC_RightWrapper .DTFC_RightBodyLiner {
+    -webkit-column-width: fit-content!important;
+    width: fit-content!important;
+}
+
+.DTFC_ScrollWrapper .DTFC_RightWrapper .DTFC_RightBodyLiner {
+    overflow-y: hidden!important;
+}
+
+.modal-backdrop {
+    z-index: 1020!important;
+}
+
+.modal.in {
+    margin: 0 auto!important;
+}
+
+.modal {
+    max-width: 650px!important;
+}
+
+.dl-horizontal {
+    margin-left: 20%;
 }

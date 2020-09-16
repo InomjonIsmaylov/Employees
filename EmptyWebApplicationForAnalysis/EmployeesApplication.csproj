@@ -178,7 +178,12 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\buttons.dataTables.min.css" />
     <Content Include="Content\Custom.css" />
+    <Content Include="Content\dataTables.material.min.css" />
+    <Content Include="Content\fixedColumns.dataTables.min.css" />
+    <Content Include="Content\jquery.modal.min.css" />
+    <Content Include="Content\material-components-web.min.css" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
     <Content Include="favicon.ico" />
@@ -249,14 +254,20 @@
     <Content Include="Models\EmpModel.edmx.diagram">
       <DependentUpon>EmpModel.edmx</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\EmployeesAppProfile.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Content\datatables.css" />
+    <Content Include="Scripts\buttons.colVis.min.js" />
+    <Content Include="Scripts\dataTables.buttons.min.js" />
+    <Content Include="Scripts\dataTables.fixedColumns.min.js" />
     <Content Include="Scripts\datatables.js" />
+    <Content Include="Scripts\dataTables.material.min.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.modal.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />

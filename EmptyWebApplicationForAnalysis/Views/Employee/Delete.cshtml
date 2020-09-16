@@ -1,6 +1,7 @@
 ﻿@model EmployeesApplication.Models.Employees
 
 @{
+    Layout = null;
     ViewBag.Title = "Delete";
 }
 
@@ -101,28 +102,17 @@
 
     </dl>
 
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("Delete", "Employee", FormMethod.Post, new { id = "DeleteForm" }))
     {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.Id);
 
         <div class="form-actions no-color">
             @* 'Back to List' <= BUTTON *@
-            <a href="/Employee/Index" class="btn btn-success" title="Back To List">
-                <i class="fa fa-arrow-circle-left"></i>
-            </a> |
+            <button type="button" onclick="$.modal.close()" class="btn btn-success btn-lg" title="Back To List" ><i class="fa fa-arrow-circle-left"></i></button>
             @* Button for confirming Delete Operation *@
-            <input type="submit" value="Delete" class="btn btn-default" />
+            <input type="button" value="Delete" onclick="return DeleteFormSubmit()" class="btn btn-default" />
         </div>
     }
+
 </div>
-
-
-@section scripts {
-    @* Toastr Notifications *@
-    <script src="~/Scripts/toastr.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            toastr.warning('Are you sure want to delete this record');
-        });
-    </script>
-}

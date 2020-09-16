@@ -7,7 +7,7 @@ namespace EmployeesApplication
     {
         List<Employees> GetEmployeeList();
         void AddEmployee(Employees employee);
-        void SaveChanges();
+        int SaveChanges();
         Employees FindById(int? id);
         void Update(Employees employee);
         void Delete(Employees employees);

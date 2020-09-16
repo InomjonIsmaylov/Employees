@@ -2,14 +2,15 @@
 
 @{
     ViewBag.Title = "Create";
+    Layout = null;
 }
 
 <h2>Create</h2>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm("Create", "Employee", FormMethod.Post, new { id = "CreateForm" }))
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Employees</h4>
         <hr />
@@ -104,7 +105,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <button type="button" onclick="return CreateFormSubmit()" class="btn btn-default"> Create </button>
             </div>
         </div>
     </div>

@@ -1,6 +1,7 @@
 ﻿@model EmployeesApplication.Models.Employees
 
 @{
+    Layout = null;
     ViewBag.Title = "Details";
 }
 
@@ -101,6 +102,6 @@
     </dl>
 </div>
 <p>
-    <a href="/Employee/Index" class="btn btn-success btn-lg" title="Back To List"><i class="fa fa-arrow-circle-left"></i></a>
-    <a href="/Employee/Edit/@Model.Id" class="btn btn-default btn-lg" title="Edit"> <i class="far fa-edit"></i> </a>
+    <button class="btn btn-success btn-lg" title="Back To List" onclick="$.modal.close()"><i class="fa fa-arrow-circle-left"></i></button>
+    <button onclick="$.modal.close(); OpenEditModal(@Model.Id)" class="btn btn-default btn-lg" title="Edit"> <i class="far fa-edit"></i> </button>
 </p>

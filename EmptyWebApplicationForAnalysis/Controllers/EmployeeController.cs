@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using EmployeesApplication.Models;
 
 namespace EmployeesApplication.Controllers
@@ -22,48 +23,6 @@ namespace EmployeesApplication.Controllers
         // GET: Employee
         public ActionResult Index()
         {
-            /* For Notifications when Redirected into this controller */
-            // Added Records Into Database
-            if (TempData["AddedItemsCount"] != null)
-            {
-                var VM = new EmployeesVM
-                {
-                    Succeeded = true,
-                    Added = int.Parse(TempData["AddedItemsCount"].ToString())
-                };
-                return View(VM);
-            }
-            // A Record created and Added Into Database
-            if (TempData["CreatedSuccessfully"] != null)
-            {
-                var VM = new EmployeesVM
-                {
-                    Succeeded = true,
-                    Created = bool.Parse(TempData["CreatedSuccessfully"].ToString())
-                };
-                return View(VM);
-            }
-            // The Record edited and the Database updated
-            if (TempData["EditedSuccessfully"] != null)
-            {
-                var VM = new EmployeesVM
-                {
-                    Succeeded = true,
-                    Edited = bool.Parse(TempData["EditedSuccessfully"].ToString())
-                };
-                return View(VM);
-            }
-            // The Record deleted and the Database updated
-            if (TempData["DeletedSuccessfully"] != null)
-            {
-                var VM = new EmployeesVM
-                {
-                    Succeeded = true,
-                    Deleted = bool.Parse(TempData["DeletedSuccessfully"].ToString())
-                };
-                return View(VM);
-            }
-
             // Default case
             return View(new EmployeesVM());
         }
@@ -82,19 +41,19 @@ namespace EmployeesApplication.Controllers
                     employees.Add(new
                     {
                         Address = emp.Address,
-                        Address_2 = emp.Address_2,
+                        Address_2 = emp.Address_2 ?? "",
                         // To display in a correct Format
-                        Date_of_Birth = emp.Date_of_Birth.Value.Date.ToShortDateString(),
-                        EMail_Home = emp.EMail_Home,
+                        Date_of_Birth = emp.Date_of_Birth.Value.Date.ToShortDateString() ?? "",
+                        EMail_Home = emp.EMail_Home ?? "",
                         Forenames = emp.Forenames,
                         Id = emp.Id,
-                        Mobile = emp.Mobile,
+                        Mobile = emp.Mobile ?? "",
                         Payroll_Number = emp.Payroll_Number,
-                        Postcode = emp.Postcode,
+                        Postcode = emp.Postcode ?? "",
                         // To display in a correct Format
                         Start_Date = emp.Start_Date.Date.ToShortDateString(),
                         Surname = emp.Surname,
-                        Telephone = emp.Telephone
+                        Telephone = emp.Telephone ?? ""
                     });
 
             return Json(new { data = employees }, JsonRequestBehavior.AllowGet);
@@ -105,7 +64,9 @@ namespace EmployeesApplication.Controllers
         [HttpPost]
         public ActionResult ImportCsv(HttpPostedFileBase upload)
         {
-            var AddedItemsCount = 0;
+            
+            upload = upload ?? Request.Files.Get(0);
+
             if (upload != null && (upload.ContentType == "text/csv" || upload.ContentType == "application/vnd.ms-excel"))
             {
                 try
@@ -140,23 +101,21 @@ namespace EmployeesApplication.Controllers
                         });
                     }
 
-                    AddedItemsCount = EmListFromFile.Count;
                     // Add to Database
                     foreach (var employee in EmListFromFile)
                         _repository.AddEmployee(employee);
 
-                    _repository.SaveChanges();
+                    var count = _repository.SaveChanges();
+                    return Json(new { message = $"{count} Employee Record{(count > 1 ? "s have" : " has")} been added!" }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
-                    throw ex;
+                    Response.StatusCode = 400;
+                    return Json(new { message = " Could not parse the data from the file, because:\n" + ex.Message }, JsonRequestBehavior.AllowGet);
                 }
             }
-
-            // Temporarly persists the data that needs for notifying
-            TempData["AddedItemsCount"] = AddedItemsCount;
-            return RedirectToAction("Index");
+            Response.StatusCode = 400;
+            return Json(new { message = $"The file of the {upload?.ContentType ?? "null"} type can not be parsed!" }, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Employee/Details/5
@@ -185,14 +144,23 @@ namespace EmployeesApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Payroll_Number,Forenames,Surname,Date_of_Birth,Telephone,Mobile,Address,Address_2,Postcode,EMail_Home,Start_Date")] Employees employees)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                Response.StatusCode = 400;
+                return View(employees);
+
+            }
+            else
             {
                 _repository.AddEmployee(employees);
                 _repository.SaveChanges();
-                return RedirectToAction("Index");
+
+                return Json(new { message = "New Employee Record has been created successfully!" });
+                //              return RedirectToAction("Index");x
             }
 
-            return View(employees);
+            //            return Json(new { success = false, @object = employees });
+            //return View(employees);
         }
 
         // GET: Employee/Edit/5
@@ -220,11 +188,13 @@ namespace EmployeesApplication.Controllers
                 _repository.Update(employees);
                 _repository.SaveChanges();
 
-                // Temporarly persists the data that needs for notifying
-                TempData["EditedSuccessfully"] = true;
-                return RedirectToAction("Index");
+                return Json(new { success = true, message = $"The Record of the Employee has been Updated" }, JsonRequestBehavior.AllowGet);
+
+                //return RedirectToAction("Index");
             }
-            return View(employees);
+
+            return Json(new { success = false, message = "Something went wrong. Could not Update the Record!" }, JsonRequestBehavior.AllowGet);
+//            return View(employees);
         }
 
         // GET: Employee/Delete/5
@@ -247,12 +217,19 @@ namespace EmployeesApplication.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            _repository.Delete(id);
-            _repository.SaveChanges();
+            try
+            {
+                _repository.Delete(id);
+                _repository.SaveChanges();
+                return Json(new { message = "The Record of the Employee has been Deleted" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Response.StatusCode = 400;
+                return Json(new { message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
 
-            // Temporarly persists the data that needs for notifying
-            TempData["DeletedSuccessfully"] = true;
-            return RedirectToAction("Index");
+            //return RedirectToAction("Index");
         }
 
         // GET: Employee/About
