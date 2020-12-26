@@ -116,7 +116,6 @@ namespace EmployeesApplication.Test
             Employees emp = new Employees();
             EmployeeController controller = new EmployeeController(mock.Object);
             controller.ModelState.AddModelError("Name", "Название модели не установлено");
-            
             var result = controller.Create(emp) as ViewResult;
             
             Assert.IsNotNull(result);
