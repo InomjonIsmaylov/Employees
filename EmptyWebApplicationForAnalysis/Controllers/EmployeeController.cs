@@ -136,13 +136,15 @@ namespace EmployeesApplication.Controllers
         // GET: Employee/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new Employees());
         }
 
         // POST: Employee/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Payroll_Number,Forenames,Surname,Date_of_Birth,Telephone,Mobile,Address,Address_2,Postcode,EMail_Home,Start_Date")] Employees employees)
+        public ActionResult Create(
+            [Bind(Include = "Id,Payroll_Number,Forenames,Surname,Date_of_Birth,Telephone,Mobile,Address,Address_2,Postcode,EMail_Home,Start_Date")] 
+            Employees employees)
         {
             if (!ModelState.IsValid)
             {
